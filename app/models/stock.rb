@@ -1,5 +1,8 @@
 class Stock < ApplicationRecord
 
+  has_many :user_stocks
+  has_many :users, through: :user_stocks
+
   def self.find_by_ticker(ticker_symbol)
     where(ticker: ticker_symbol).first
   end
@@ -13,6 +16,18 @@ class Stock < ApplicationRecord
     new_stock
   end
 
+  def self.find_or_create(ticker_symbol)
+    stock = find_by_ticker(ticker_symbol)
+    return stock if !stock.nil?
+
+    stock = new_from_lookup(ticker_symbol)
+    if !stock.nil? && stock.save
+      stock
+    else
+      nil
+    end
+  end
+
   def price
     closing_price = StockQuote::Stock.quote(ticker).close
     return "#{closing_price} (Closing)" if closing_price
@@ -22,9 +37,6 @@ class Stock < ApplicationRecord
 
     'Unavailable'
   end
-
-
-
 
 
 end
