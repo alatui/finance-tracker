@@ -25,5 +25,6 @@ init_stock_lookup = () ->
 
 
 
-$(document).ready ->
+$(document).on('turbolinks:load', ->
   init_stock_lookup()
+)
